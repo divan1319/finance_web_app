@@ -32,12 +32,10 @@ success "Docker disponible."
 # ---------------------------------------------------------------------------
 # 2. Variables configurables
 # ---------------------------------------------------------------------------
-PHP_VERSION="${PHP_VERSION:-8.3}"           # Versión de PHP a usar en el contenedor temporal
 APP_DIR="${APP_DIR:-$(pwd)}"                # Directorio raíz del proyecto (donde está composer.json)
 SAIL_SERVICES="${SAIL_SERVICES:-mysql}"     # Servicios de Sail: pgsql, mysql, redis, etc.
 
 info "Directorio del proyecto : $APP_DIR"
-info "PHP versión (bootstrap)  : $PHP_VERSION"
 info "Servicios Sail           : $SAIL_SERVICES"
 
 cd "$APP_DIR"
