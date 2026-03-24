@@ -4,7 +4,10 @@
 
 ### Inicializar el proyecto:
 
+
+
 ```bash
+ chmod +x init.sh
 ./init.sh
 ```
 
