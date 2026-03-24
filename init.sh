@@ -113,45 +113,6 @@ info "Levantando contenedores con Sail..."
 ./vendor/bin/sail up -d
 success "Contenedores levantados."
 
-# ---------------------------------------------------------------------------
-# 8. Esperar a que la base de datos esté lista
-# ---------------------------------------------------------------------------
-info "Esperando a que la base de datos esté lista..."
-sleep 5  # Pausa inicial; ajusta según tu máquina
-
-DB_READY=0
-for i in $(seq 1 15); do
-  if ./vendor/bin/sail artisan db:monitor --databases=mysql 2>/dev/null | grep -q "OK"; then
-    DB_READY=1
-    break
-  fi
-  # Fallback genérico: intentar una migración y ver si no falla
-  if ./vendor/bin/sail artisan migrate:status >/dev/null 2>&1; then
-    DB_READY=1
-    break
-  fi
-  warn "Base de datos no lista aún, reintentando ($i/15)..."
-  sleep 3
-done
-
-if [ "$DB_READY" -eq 0 ]; then
-  warn "La base de datos tardó demasiado. Ejecuta las migraciones manualmente:"
-  warn "  ./vendor/bin/sail artisan migrate --seed"
-else
-  # ---------------------------------------------------------------------------
-  # 9. Ejecutar migraciones y seeders
-  # ---------------------------------------------------------------------------
-  info "Ejecutando migraciones..."
-  ./vendor/bin/sail artisan migrate --force
-  success "Migraciones ejecutadas."
-
-  read -r -p "$(echo -e "${YELLOW}¿Ejecutar seeders? [y/N]:${NC} ")" RUN_SEED
-  if [[ "$RUN_SEED" =~ ^[Yy]$ ]]; then
-    info "Ejecutando seeders..."
-    ./vendor/bin/sail artisan db:seed --force
-    success "Seeders ejecutados."
-  fi
-fi
 
 # ---------------------------------------------------------------------------
 # 10. Resumen final
