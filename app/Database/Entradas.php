@@ -1,0 +1,170 @@
+<?php
+
+namespace App\Database;
+
+use PDO;
+
+/**
+ * Clase Entradas
+ *
+ * Gestiona las operaciones CRUD para los registros de entrada (ingresos)
+ * en la tabla `gastos`, filtrando por el tipo de registro 'registro_entrada'.
+ */
+class Entradas
+{
+    private PDO $pdo;
+    private string $codigoTipo = 'registro_entrada';
+
+    public function __construct()
+    {
+        $this->pdo = Conexion::obtenerInstancia()->getPDO();
+    }
+
+    /**
+     * Registra una nueva entrada.
+     *
+     * @param  int    $userId     ID del usuario autenticado
+     * @param  string $nombre     Descripción / nombre de la entrada
+     * @param  float  $monto      Monto del ingreso
+     * @param  string $fecha      Fecha en formato Y-m-d
+     * @param  string $facturaUrl Ruta de la imagen de factura almacenada
+     * @return int                ID del registro creado
+     */
+    public function crear(int $userId, string $nombre, float $monto, string $fecha, string $facturaUrl): int
+    {
+        $tipoId = $this->obtenerTipoId();
+
+        $sql = "INSERT INTO gastos (tipo_registro_id, user_id, nombre, monto, fecha, factura_url, created_at, updated_at)
+                VALUES (:tipo_id, :user_id, :nombre, :monto, :fecha, :factura_url, NOW(), NOW())";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':tipo_id'     => $tipoId,
+            ':user_id'     => $userId,
+            ':nombre'      => $nombre,
+            ':monto'       => $monto,
+            ':fecha'       => $fecha,
+            ':factura_url' => $facturaUrl,
+        ]);
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    /**
+     * Devuelve todas las entradas de un usuario.
+     *
+     * @param  int   $userId ID del usuario
+     * @return array Lista de entradas
+     */
+    public function listar(int $userId): array
+    {
+        $sql = "SELECT g.id, g.nombre, g.monto, g.fecha, g.factura_url, g.created_at
+                FROM gastos g
+                INNER JOIN tipo_registros tr ON tr.id = g.tipo_registro_id
+                WHERE tr.codigo = :codigo AND g.user_id = :user_id
+                ORDER BY g.fecha DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':codigo' => $this->codigoTipo, ':user_id' => $userId]);
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Busca una entrada por su ID.
+     *
+     * @param  int        $id     ID del registro
+     * @param  int        $userId ID del usuario (para verificar pertenencia)
+     * @return array|null         Datos del registro o null si no existe
+     */
+    public function buscarPorId(int $id, int $userId): ?array
+    {
+        $sql = "SELECT g.id, g.nombre, g.monto, g.fecha, g.factura_url, g.created_at
+                FROM gastos g
+                INNER JOIN tipo_registros tr ON tr.id = g.tipo_registro_id
+                WHERE g.id = :id AND g.user_id = :user_id AND tr.codigo = :codigo";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':id' => $id, ':user_id' => $userId, ':codigo' => $this->codigoTipo]);
+
+        $resultado = $stmt->fetch();
+        return $resultado !== false ? $resultado : null;
+    }
+
+    /**
+     * Actualiza una entrada existente.
+     *
+     * @param  int    $id         ID del registro a actualizar
+     * @param  int    $userId     ID del usuario
+     * @param  string $nombre     Nuevo nombre/descripción
+     * @param  float  $monto      Nuevo monto
+     * @param  string $fecha      Nueva fecha
+     * @param  string $facturaUrl Nueva ruta de factura
+     * @return bool               True si se actualizó correctamente
+     */
+    public function actualizar(int $id, int $userId, string $nombre, float $monto, string $fecha, string $facturaUrl): bool
+    {
+        $sql = "UPDATE gastos
+                SET nombre = :nombre, monto = :monto, fecha = :fecha, factura_url = :factura_url, updated_at = NOW()
+                WHERE id = :id AND user_id = :user_id";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':nombre'      => $nombre,
+            ':monto'       => $monto,
+            ':fecha'       => $fecha,
+            ':factura_url' => $facturaUrl,
+            ':id'          => $id,
+            ':user_id'     => $userId,
+        ]);
+
+        return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Elimina una entrada por su ID.
+     *
+     * @param  int  $id     ID del registro
+     * @param  int  $userId ID del usuario
+     * @return bool         True si se eliminó correctamente
+     */
+    public function eliminar(int $id, int $userId): bool
+    {
+        $sql = "DELETE FROM gastos WHERE id = :id AND user_id = :user_id";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':id' => $id, ':user_id' => $userId]);
+
+        return $stmt->rowCount() > 0;
+    }
+
+    /**
+     * Calcula el total de todas las entradas de un usuario.
+     *
+     * @param  int   $userId ID del usuario
+     * @return float         Suma total de entradas
+     */
+    public function total(int $userId): float
+    {
+        $sql = "SELECT COALESCE(SUM(g.monto), 0) AS total
+                FROM gastos g
+                INNER JOIN tipo_registros tr ON tr.id = g.tipo_registro_id
+                WHERE tr.codigo = :codigo AND g.user_id = :user_id";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':codigo' => $this->codigoTipo, ':user_id' => $userId]);
+
+        return (float) $stmt->fetchColumn();
+    }
+
+    /**
+     * Obtiene el ID del tipo de registro 'registro_entrada'.
+     */
+    private function obtenerTipoId(): int
+    {
+        $stmt = $this->pdo->prepare("SELECT id FROM tipo_registros WHERE codigo = :codigo LIMIT 1");
+        $stmt->execute([':codigo' => $this->codigoTipo]);
+
+        return (int) $stmt->fetchColumn();
+    }
+}
