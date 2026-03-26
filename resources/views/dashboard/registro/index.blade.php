@@ -1,10 +1,9 @@
 @extends('layouts.app')
 
-@section('brand', 'Dashboard')
-
+@section('brand', 'Registro')
 @section('title')
 <h1 class="text-3xl font-bold tracking-tight text-white">
-    Dashboard
+    Registro
 </h1>
 @endsection
 
