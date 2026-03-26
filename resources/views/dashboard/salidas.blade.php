@@ -8,7 +8,7 @@
 @endsection
 
 @section('boton_accion')
-    <a href="{{ route('dashboard.salidas.registro.index') }}" class="bg-white text-gray-900 px-4 py-2 rounded-md text-sm font-bold">Registrar salida</a>
+    <a href="{{ route('dashboard.salidas.registro.salida') }}" class="bg-white text-gray-900 px-4 py-2 rounded-md text-sm font-bold">Registrar salida</a>
 @endsection
 
 @section('content')

@@ -20,8 +20,8 @@ Route::prefix('dashboard')->group(function () {
             return view('dashboard.entradas');
         })->name('dashboard.entradas.index');
         Route::get('/registro', function () {
-            return view('dashboard.registro.index');
-        })->name('dashboard.entradas.registro.index');
+            return view('dashboard.registro.entrada');
+        })->name('dashboard.entradas.registro.entrada');
     });
 
     Route::prefix('salidas')->group(function () {
@@ -29,7 +29,7 @@ Route::prefix('dashboard')->group(function () {
             return view('dashboard.salidas');
         })->name('dashboard.salidas.index');
         Route::get('/registro', function () {
-            return view('dashboard.registro.index');
-        })->name('dashboard.salidas.registro.index');
+            return view('dashboard.registro.salida');
+        })->name('dashboard.salidas.registro.salida');
     });
 });
