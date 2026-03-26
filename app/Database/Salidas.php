@@ -14,25 +14,28 @@ class Salidas
 {
     private PDO $pdo;
     private string $codigoTipo = 'registro_salida';
+    private GestorFacturas $gestorFacturas;
 
     public function __construct()
     {
-        $this->pdo = Conexion::obtenerInstancia()->getPDO();
+        $this->pdo            = Conexion::obtenerInstancia()->getPDO();
+        $this->gestorFacturas = new GestorFacturas();
     }
 
     /**
-     * Registra una nueva salida.
+     * Registra una nueva salida y guarda la imagen de factura en el servidor.
      *
-     * @param  int    $userId     ID del usuario autenticado
-     * @param  string $nombre     Descripción / nombre de la salida
-     * @param  float  $monto      Monto del egreso
-     * @param  string $fecha      Fecha en formato Y-m-d
-     * @param  string $facturaUrl Ruta de la imagen de factura almacenada
-     * @return int                ID del registro creado
+     * @param  int    $userId  ID del usuario autenticado
+     * @param  string $nombre  Descripción / nombre de la salida
+     * @param  float  $monto   Monto del egreso
+     * @param  string $fecha   Fecha en formato Y-m-d
+     * @param  array  $archivo Elemento de $_FILES con la imagen de la factura
+     * @return int             ID del registro creado
      */
-    public function crear(int $userId, string $nombre, float $monto, string $fecha, string $facturaUrl): int
+    public function crear(int $userId, string $nombre, float $monto, string $fecha, array $archivo): int
     {
-        $tipoId = $this->obtenerTipoId();
+        $facturaUrl = $this->gestorFacturas->guardar($archivo);
+        $tipoId     = $this->obtenerTipoId();
 
         $sql = "INSERT INTO gastos (tipo_registro_id, user_id, nombre, monto, fecha, factura_url, created_at, updated_at)
                 VALUES (:tipo_id, :user_id, :nombre, :monto, :fecha, :factura_url, NOW(), NOW())";
@@ -122,7 +125,7 @@ class Salidas
     }
 
     /**
-     * Elimina una salida por su ID.
+     * Elimina una salida por su ID y borra su factura del servidor.
      *
      * @param  int  $id     ID del registro
      * @param  int  $userId ID del usuario
@@ -130,12 +133,22 @@ class Salidas
      */
     public function eliminar(int $id, int $userId): bool
     {
-        $sql = "DELETE FROM gastos WHERE id = :id AND user_id = :user_id";
+        $salida = $this->buscarPorId($id, $userId);
 
+        if (!$salida) {
+            return false;
+        }
+
+        $sql  = "DELETE FROM gastos WHERE id = :id AND user_id = :user_id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':id' => $id, ':user_id' => $userId]);
 
-        return $stmt->rowCount() > 0;
+        if ($stmt->rowCount() > 0) {
+            $this->gestorFacturas->eliminar($salida['factura_url']);
+            return true;
+        }
+
+        return false;
     }
 
     /**
