@@ -17,7 +17,7 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 info()    { echo -e "${CYAN}[INFO]${NC}  $1"; }
-success() { echo -e "${GREEN}[OK]${NC}    $1"; }
+success() { echo -e "${GREEN}where.exe php[OK]${NC}    $1"; }
 warn()    { echo -e "${YELLOW}[WARN]${NC}  $1"; }
 error()   { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
@@ -25,7 +25,8 @@ error()   { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 # 1. Verificar que Docker esté disponible
 # ---------------------------------------------------------------------------
 info "Verificando Docker..."
-command -v docker >/dev/null 2>&1 || error "Docker no está instalado o no está en el PATH."
+command -v docker >/dev/null 2>&1 || error "Docker no está instalado o no está 
+en el PATH."
 docker info >/dev/null 2>&1     || error "El daemon de Docker no está corriendo."
 success "Docker disponible."
 
