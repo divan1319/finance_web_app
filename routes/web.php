@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Dashboard\BalanceController;
 use App\Http\Controllers\Dashboard\GastoController;
 use App\Http\Controllers\Dashboard\RegistroGastoController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,9 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
     Route::get('/', function () {
         return view('dashboard.index');
     })->name('dashboard.index');
+
+    Route::get('/balance', [BalanceController::class, 'show'])->name('dashboard.balance');
+    Route::get('/balance/pdf', [BalanceController::class, 'pdf'])->name('dashboard.balance.pdf');
 
     Route::prefix('entradas')->group(function () {
         Route::get('/', [GastoController::class, 'indexEntradas'])->name('dashboard.entradas.index');
