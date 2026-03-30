@@ -12,5 +12,10 @@
 @endsection
 
 @section('content')
-
+    @if (session('ok'))
+        <div class="mb-6 rounded-md bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200 outline outline-1 outline-emerald-500/30"
+            role="status">
+            {{ session('ok') }}
+        </div>
+    @endif
 @endsection

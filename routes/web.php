@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Dashboard\RegistroGastoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,6 +29,8 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
         Route::get('/registro', function () {
             return view('dashboard.registro.entrada');
         })->name('dashboard.entradas.registro.entrada');
+        Route::post('/registro', [RegistroGastoController::class, 'storeEntrada'])
+            ->name('dashboard.entradas.registro.store');
     });
 
     Route::prefix('salidas')->group(function () {
@@ -37,5 +40,7 @@ Route::middleware('auth')->prefix('dashboard')->group(function () {
         Route::get('/registro', function () {
             return view('dashboard.registro.salida');
         })->name('dashboard.salidas.registro.salida');
+        Route::post('/registro', [RegistroGastoController::class, 'storeSalida'])
+            ->name('dashboard.salidas.registro.store');
     });
 });
