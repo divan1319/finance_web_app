@@ -12,8 +12,17 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
+/**
+ * Reporte de balance por rango de fechas: vista HTML con pastel SVG y exportación PDF con pastel PNG.
+ *
+ * El periodo se toma de los query string `desde` y `hasta` (fechas Y-m-d válidas y ordenadas); si faltan o
+ * son inválidos, se usa el mes calendario actual.
+ */
 class BalanceController extends Controller
 {
+    /**
+     * Renderiza la vista `dashboard.balance` con totales, listas y gráfico SVG.
+     */
     public function show(Request $request): View
     {
         [$desde, $hasta] = $this->resolverPeriodo($request);
@@ -38,6 +47,11 @@ class BalanceController extends Controller
         ]);
     }
 
+    /**
+     * Genera y descarga un PDF A4 vertical del mismo periodo que {@see show()}.
+     *
+     * Habilita recursos remotos en DomPDF para que el data URI del pastel PNG se incruste bien.
+     */
     public function pdf(Request $request): Response
     {
         [$desde, $hasta] = $this->resolverPeriodo($request);
@@ -67,7 +81,9 @@ class BalanceController extends Controller
     }
 
     /**
-     * @return array{0: string, 1: string} Fechas Y-m-d
+     * Resuelve el rango [desde, hasta] en formato `Y-m-d`.
+     *
+     * @return array{0: string, 1: string} Par inicio y fin del periodo.
      */
     private function resolverPeriodo(Request $request): array
     {

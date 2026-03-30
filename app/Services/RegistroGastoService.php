@@ -10,12 +10,24 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
+/**
+ * Registra nuevos movimientos financieros (entradas o salidas) con factura obligatoria.
+ *
+ * Valida los campos del formulario, persiste la imagen mediante {@see GestorFacturas} e inserta
+ * la fila en la tabla correspondiente. Los errores de archivo o de guardado se traducen a
+ * {@see ValidationException} para mostrarlos en el formulario.
+ */
 class RegistroGastoService
 {
     public function __construct(
         private GestorFacturas $gestorFacturas,
     ) {}
 
+    /**
+     * Crea una nueva entrada (ingreso) para el usuario autenticado.
+     *
+     * @throws ValidationException Si falta la factura, no es válida o falla el almacenamiento.
+     */
     public function almacenarEntrada(Request $request): void
     {
         $this->almacenar($request, function (int $userId, string $nombre, float $monto, string $fecha, UploadedFile $factura): void {
@@ -23,6 +35,11 @@ class RegistroGastoService
         });
     }
 
+    /**
+     * Crea una nueva salida (egreso) para el usuario autenticado.
+     *
+     * @throws ValidationException Si falta la factura, no es válida o falla el almacenamiento.
+     */
     public function almacenarSalida(Request $request): void
     {
         $this->almacenar($request, function (int $userId, string $nombre, float $monto, string $fecha, UploadedFile $factura): void {
@@ -31,7 +48,11 @@ class RegistroGastoService
     }
 
     /**
-     * @param  callable(int, string, float, string, UploadedFile): void  $registrar
+     * Valida la petición y delega en el callback con user id y datos tipados.
+     *
+     * @param  callable(int, string, float, string, UploadedFile): void  $registrar  Inserta en entradas o salidas.
+     *
+     * @throws ValidationException Validación HTTP o mensaje derivado de {@see RuntimeException}.
      */
     private function almacenar(Request $request, callable $registrar): void
     {
@@ -60,12 +81,22 @@ class RegistroGastoService
         }
     }
 
+    /**
+     * Guarda la factura en disco y crea la fila en {@see Entradas}.
+     *
+     * @throws RuntimeException Propagado desde el guardado de archivo si aplica.
+     */
     private function registrarEntrada(int $userId, string $nombre, float $monto, string $fecha, UploadedFile $factura): void
     {
         $facturaUrl = $this->gestorFacturas->guardar($this->arrayDesdeUploadedFile($factura));
         (new Entradas)->crearConFacturaUrl($userId, $nombre, $monto, $fecha, $facturaUrl);
     }
 
+    /**
+     * Guarda la factura en disco y crea la fila en {@see Salidas}.
+     *
+     * @throws RuntimeException Propagado desde el guardado de archivo si aplica.
+     */
     private function registrarSalida(int $userId, string $nombre, float $monto, string $fecha, UploadedFile $factura): void
     {
         $facturaUrl = $this->gestorFacturas->guardar($this->arrayDesdeUploadedFile($factura));
@@ -76,6 +107,8 @@ class RegistroGastoService
      * Formato compatible con {@see GestorFacturas::guardar()}.
      *
      * @return array{name: string, type: string, tmp_name: string, error: int, size: int}
+     *
+     * @throws RuntimeException Si no se puede leer la ruta temporal del archivo subido.
      */
     private function arrayDesdeUploadedFile(UploadedFile $archivo): array
     {

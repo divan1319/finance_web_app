@@ -3,10 +3,18 @@
 namespace App\Support;
 
 /**
- * SVG de pastel (entradas vs salidas) para HTML y dompdf.
+ * Gráfico circular (pastel) entradas vs salidas como fragmento SVG inline.
+ *
+ * Colores: verde (entradas) y rojo (salidas). Útil en vistas HTML; en PDF puede preferirse
+ * {@see PastelBalancePng} según el motor de renderizado.
  */
 final class PastelBalanceSvg
 {
+    /**
+     * @param  float  $porcentajeEntradas  Porcentaje del pastel para entradas (0–100).
+     * @param  int  $tamano  Ancho y alto del viewBox en unidades SVG.
+     * @return string Markup SVG (sin XML declaration) con dos sectores o círculo lleno en casos límite.
+     */
     public static function generar(float $porcentajeEntradas, int $tamano = 220): string
     {
         $pe = max(0.0, min(100.0, $porcentajeEntradas));
@@ -73,6 +81,9 @@ final class PastelBalanceSvg
         );
     }
 
+    /**
+     * SVG de un círculo sólido cuando el porcentaje es prácticamente 0 % o 100 %.
+     */
     private static function circuloLleno(float $cx, float $cy, float $r, string $color, int $tamano): string
     {
         return sprintf(

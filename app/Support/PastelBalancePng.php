@@ -3,10 +3,20 @@
 namespace App\Support;
 
 /**
- * Pastel entradas/salidas como PNG (data URI) para dompdf, que no dibuja bien SVG.
+ * Gráfico circular (pastel) entradas vs salidas como PNG embebido en data URI.
+ *
+ * Pensado para DomPDF, que no renderiza bien SVG en muchos casos. Requiere la extensión GD;
+ * si no está disponible o falla la generación, devuelve null.
  */
 final class PastelBalancePng
 {
+    /**
+     * Genera un PNG en base64 con prefijo `data:image/png;base64,...`.
+     *
+     * @param  float  $porcentajeEntradas  Porcentaje del círculo dedicado a entradas (0–100).
+     * @param  int  $tamano  Lado del cuadrado en píxeles (se acota entre 80 y 400).
+     * @return string|null Data URI listo para el atributo `src` en HTML/PDF, o null sin GD o si falla GD.
+     */
     public static function generarDataUri(float $porcentajeEntradas, int $tamano = 200): ?string
     {
         if (! extension_loaded('gd')) {
