@@ -18,8 +18,9 @@ class DatabaseSeeder extends Seeder
         $this->call(TipoRegistroSeeder::class);
 
         User::factory()->create([
-            'name'  => 'Test User',
+            'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => '12345678',
         ]);
     }
 }

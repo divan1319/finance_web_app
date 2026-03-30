@@ -55,16 +55,19 @@
                     </div>
                     <div class="hidden md:block">
                         <div class="ml-4 flex items-center md:ml-6">
-                            <button type="button" title="Cerrar sesión" aria-label="Cerrar sesión"
-                                class="relative inline-flex items-center gap-2 rounded-full p-1.5 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-white">
-                                <span class="absolute -inset-1.5"></span>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                                    aria-hidden="true" class="size-6 shrink-0">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                                </svg>
-                                <span class="hidden pr-1 sm:inline">Cerrar sesión</span>
-                            </button>
+                            <form method="POST" action="{{ route('logout') }}" class="inline">
+                                @csrf
+                                <button type="submit" title="Cerrar sesión" aria-label="Cerrar sesión"
+                                    class="relative inline-flex cursor-pointer items-center gap-2 rounded-full p-1.5 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-white">
+                                    <span class="absolute -inset-1.5"></span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                        aria-hidden="true" class="size-6 shrink-0">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                                    </svg>
+                                    <span class="hidden pr-1 sm:inline">Cerrar sesión</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
 
@@ -112,16 +115,19 @@
                             'text-gray-300 hover:bg-white/5 hover:text-white' => ! request()->routeIs('dashboard.salidas.*'),
                         ])
                         @if (request()->routeIs('dashboard.salidas.*')) aria-current="page" @endif>Salidas</a>
-                    <button type="button" title="Cerrar sesión" aria-label="Cerrar sesión"
-                        class="relative inline-flex items-center gap-2 w-full rounded-md px-2 py-2 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-white">
-                        <span class="absolute -inset-0.5"></span>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                            aria-hidden="true" class="size-6 shrink-0">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                        </svg>
-                        <span>Cerrar sesión</span>
-                    </button>
+                    <form method="POST" action="{{ route('logout') }}" class="block">
+                        @csrf
+                        <button type="submit" title="Cerrar sesión" aria-label="Cerrar sesión"
+                            class="relative inline-flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-white">
+                            <span class="absolute -inset-0.5"></span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                aria-hidden="true" class="size-6 shrink-0">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                            </svg>
+                            <span>Cerrar sesión</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </nav>
