@@ -25,20 +25,29 @@ class Entradas
     /**
      * Registra una nueva entrada y guarda la imagen de factura en el servidor.
      *
-     * @param  int    $userId   ID del usuario autenticado
-     * @param  string $nombre   Descripción / nombre de la entrada
-     * @param  float  $monto    Monto del ingreso
-     * @param  string $fecha    Fecha en formato Y-m-d
+     * @param  int    $userId ID del usuario autenticado
+     * @param  string  $nombre  Descripción / nombre de la entrada
+     * @param  float  $monto  Monto del ingreso
+     * @param  string  $fecha  Fecha en formato Y-m-d
      * @param  array  $archivo  Elemento de $_FILES con la imagen de la factura
-     * @return int              ID del registro creado
+     * @return int ID del registro creado
      */
     public function crear(int $userId, string $nombre, float $monto, string $fecha, array $archivo): int
     {
         $facturaUrl = $this->gestorFacturas->guardar($archivo);
-        $tipoId     = $this->obtenerTipoId();
 
-        $sql = "INSERT INTO gastos (tipo_registro_id, user_id, nombre, monto, fecha, factura_url, created_at, updated_at)
-                VALUES (:tipo_id, :user_id, :nombre, :monto, :fecha, :factura_url, NOW(), NOW())";
+        return $this->crearConFacturaUrl($userId, $nombre, $monto, $fecha, $facturaUrl);
+    }
+
+    /**
+     * Inserta un registro cuando la factura ya fue guardada (p. ej. por un servicio que usa {@see GestorFacturas}).
+     */
+    public function crearConFacturaUrl(int $userId, string $nombre, float $monto, string $fecha, string $facturaUrl): int
+    {
+        $tipoId = $this->obtenerTipoId();
+
+        $sql = 'INSERT INTO gastos (tipo_registro_id, user_id, nombre, monto, fecha, factura_url, created_at, updated_at)
+                VALUES (:tipo_id, :user_id, :nombre, :monto, :fecha, :factura_url, NOW(), NOW())';
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -76,9 +85,9 @@ class Entradas
     /**
      * Busca una entrada por su ID.
      *
-     * @param  int        $id     ID del registro
-     * @param  int        $userId ID del usuario (para verificar pertenencia)
-     * @return array|null         Datos del registro o null si no existe
+     * @param  int  $id  ID del registro
+     * @param  int  $userId  ID del usuario (para verificar pertenencia)
+     * @return array|null Datos del registro o null si no existe
      */
     public function buscarPorId(int $id, int $userId): ?array
     {
@@ -97,13 +106,13 @@ class Entradas
     /**
      * Actualiza una entrada existente.
      *
-     * @param  int    $id         ID del registro a actualizar
-     * @param  int    $userId     ID del usuario
-     * @param  string $nombre     Nuevo nombre/descripción
-     * @param  float  $monto      Nuevo monto
-     * @param  string $fecha      Nueva fecha
-     * @param  string $facturaUrl Nueva ruta de factura
-     * @return bool               True si se actualizó correctamente
+     * @param  int  $id  ID del registro a actualizar
+     * @param  int  $userId  ID del usuario
+     * @param  string  $nombre  Nuevo nombre/descripción
+     * @param  float  $monto  Nuevo monto
+     * @param  string  $fecha  Nueva fecha
+     * @param  string  $facturaUrl  Nueva ruta de factura
+     * @return bool True si se actualizó correctamente
      */
     public function actualizar(int $id, int $userId, string $nombre, float $monto, string $fecha, string $facturaUrl): bool
     {
