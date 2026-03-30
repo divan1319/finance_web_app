@@ -13,9 +13,17 @@
 
 @section('content')
     @if (session('ok'))
-        <div class="mb-6 rounded-md bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200 outline outline-1 outline-emerald-500/30"
+        <div class="mb-6 rounded-md bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200  outline-1 outline-emerald-500/30"
             role="status">
             {{ session('ok') }}
         </div>
     @endif
+    @if (session('error'))
+        <div class="mb-6 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-200 outline-1 outline-red-500/30"
+            role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <x-tabla-gastos :gastos="$gastos" tipo="entrada" />
 @endsection
