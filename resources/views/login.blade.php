@@ -20,9 +20,9 @@
         </div>
 
         <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form action="#" method="POST" class="space-y-6">
-                <div>
-                    <label for="email" class="block text-sm/6 font-medium text-gray-100">Correo</label>
+    <form action="{{ route('login') }}" method="POST" class="space-y-6">
+        @csrf  <div>
+            <label for="email" class="block text-sm/6 font-medium text-gray-100">Correo</label>
                     <div class="mt-2">
                         <input id="email" type="email" name="email" required autocomplete="email" class="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-white sm:text-sm/6" />
                     </div>
