@@ -1,5 +1,11 @@
 # Aplicación web para el control de finanzas
 
+## Integrantes:
+- MARIO ALEJANDRO ORELLANA ANDRADE		OA182314 
+- DANIEL IVAN LÓPEZ GARCÍA			    LG190078 
+- KEVIN ARTURO VAQUERANO MORALES	    VM223215
+- CARLOS EDUARDO HERNÁNDEZ ALAS	        HA221693
+
 ## Configuración
 
 ### Configurar las variables para la bd
